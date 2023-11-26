@@ -29,14 +29,14 @@
 <body>
     <div class="d-flex flex-column flex-root">
         <div class="d-flex flex-column flex-lg-row flex-column-fluid">
-            <div class="d-flex flex-column flex-lg-row-fluid w-lg-50 p-10 order-2 order-lg-1">
+            <div class="d-flex flex-column flex-lg-row-fluid w-lg-50 p-10 order-2 order-lg-3">
                 <div class="d-flex flex-center flex-column flex-lg-row-fluid">
                     @include('components.error-message')
                     <div class="w-lg-500px p-10">
-                        <form class="form w-100" action="{{ route('signin') }}" method="POST">
+                        <form class="form w-100" action="{{ route('signup') }}" method="POST">
                             @csrf
                             <div class="text-center mb-11">
-                                <h1 class="text-gray-900 fw-bolder mb-3">Sign In</h1>
+                                <h1 class="text-gray-900 fw-bolder mb-3">Sign Up</h1>
                                 <div class="text-gray-500 fw-semibold fs-6">Your Social Campaigns</div>
                             </div>
                             <div class="row g-3 mb-9">
@@ -55,12 +55,20 @@
                             <div class="separator separator-content my-14">
                                 <span class="w-125px text-gray-500 fw-semibold fs-7">Or with email</span>
                             </div>
-                            <div class="fv-row mb-8">
+                            <div class="fv-row mb-3">
+                                <input type="text" placeholder="Name" name="name" autocomplete="off" class="form-control bg-transparent" />
+                                <div class="invalid-feedback"></div>
+                            </div>
+                            <div class="fv-row mb-3">
                                 <input type="text" placeholder="Email" name="email" autocomplete="off" class="form-control bg-transparent" />
                                 <div class="invalid-feedback"></div>
                             </div>
                             <div class="fv-row mb-3">
                                 <input type="password" placeholder="Password" name="password" autocomplete="off" class="form-control bg-transparent" />
+                                <div class="invalid-feedback"></div>
+                            </div>
+                            <div class="fv-row mb-3">
+                                <input type="password" placeholder="Password Confirmation" name="password_confirmation" autocomplete="off" class="form-control bg-transparent" />
                                 <div class="invalid-feedback"></div>
                             </div>
                             <div class="d-flex flex-stack flex-wrap gap-3 fs-base fw-semibold mb-8">
@@ -77,8 +85,8 @@
                                     </span>
                                 </button>
                             </div>
-                            <div class="text-gray-500 text-center fw-semibold fs-6">Not a Member yet? 
-                                <a href="{{ route('signup') }}" class="link-primary">Sign up</a>
+                            <div class="text-gray-500 text-center fw-semibold fs-6">Already a Member? 
+                                <a href="{{ route('signin') }}" class="link-primary">Sign in</a>
                             </div>
                         </form>
                     </div>

@@ -1,7 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Auth\SignInController;
+use App\Http\Controllers\Auth\SignUpController;
 use App\Http\Controllers\Admin\HandleComplaintController;
 use App\Http\Controllers\User\ComplaintController;
 
@@ -22,8 +23,10 @@ Route::get('/', function () {
 
 Route::middleware('guest')->group(function ()
 {
-    Route::get('sign-in', [AuthController::class, 'signin'])->name('signin');
-    Route::post('sign-in', [AuthController::class, 'signinaction']);
+    Route::get('sign-in', [SignInController::class, 'signin'])->name('signin');
+    Route::post('sign-in', [SignInController::class, 'signinAction']);
+    Route::get('sign-up', [SignUpController::class, 'signup'])->name('signup');
+    Route::post('sign-up', [SignUpController::class, 'signupAction']);
 });
 
 Route::middleware('auth')->group(function ()
@@ -38,7 +41,7 @@ Route::middleware('auth')->group(function ()
             return redirect()->route('sign-in');
         }
     });
-    Route::get('sign-out', [AuthController::class, 'signout'])->name('signout');
+    Route::get('sign-out', [SignInController::class, 'signout'])->name('signout');
     Route::group(['middleware' => 'checkRole:1', 'prefix' => 'admin', 'as' => 'admin.'], function () {
         Route::get('complaint', [HandleComplaintController::class, 'index'])->name('complaint');
         Route::get('complaint/data', [HandleComplaintController::class, 'data'])->name('complaint.data');

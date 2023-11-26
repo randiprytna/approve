@@ -28,7 +28,22 @@ Route::middleware('guest')->group(function ()
 
 Route::middleware('auth')->group(function ()
 {
+    Route::get('/home', function () {
+        $userRole = auth()->user()->role_id;
+        if ($userRole == 1) {
+            return redirect()->route('admin.complaint');
+        } elseif ($userRole == 2) {
+            return redirect()->route('user.complaint');
+        } else {
+            return redirect()->route('sign-in');
+        }
+    });
     Route::get('sign-out', [AuthController::class, 'signout'])->name('signout');
-    Route::get('admin/complaint', [HandleComplaintController::class, 'index'])->name('admin.complaint');
-    Route::get('user/complaint', [ComplaintController::class, 'index'])->name('user.complaint');
+    Route::group(['middleware' => 'checkRole:1'], function () {
+        Route::get('admin/complaint', [HandleComplaintController::class, 'index'])->name('admin.complaint');
+    });
+    
+    Route::group(['middleware' => 'checkRole:2'], function () {
+        Route::get('user/complaint', [ComplaintController::class, 'index'])->name('user.complaint');
+    });
 });

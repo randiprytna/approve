@@ -1,6 +1,9 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Admin\HandleComplaintController;
+use App\Http\Controllers\User\ComplaintController;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,5 +17,18 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect()->route('signin');
+});
+
+Route::middleware('guest')->group(function ()
+{
+    Route::get('sign-in', [AuthController::class, 'signin'])->name('signin');
+    Route::post('sign-in', [AuthController::class, 'signinaction']);
+});
+
+Route::middleware('auth')->group(function ()
+{
+    Route::get('sign-out', [AuthController::class, 'signout'])->name('signout');
+    Route::get('admin/complaint', [HandleComplaintController::class, 'index'])->name('admin.complaint');
+    Route::get('user/complaint', [ComplaintController::class, 'index'])->name('user.complaint');
 });

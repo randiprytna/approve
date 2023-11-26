@@ -17,16 +17,15 @@ class ComplaintController extends Controller
 
     public function data()
     {
-        $complaints = Complaint::with('complaintImages')->get();
+        $complaints = Complaint::where('user_id', auth()->user()->id)->get();
 
         $datas = [];        
         foreach ($complaints as $complaint) {
-            $complaintImages = $complaint->complaintImages->pluck('image_url');
-
             $datas[] = [
                 'id' => $complaint->id,
                 'complaint' => $complaint->complaint,
                 'status' => $complaint->status,
+                'complaint_created' => $complaint->created_at->format('d F Y H.i')
             ];
         }
 
@@ -98,5 +97,18 @@ class ComplaintController extends Controller
         }
 
         return response()->json($responses);
+    }
+
+    public function getHistory($complaintId)
+    {
+        $complaint = Complaint::find($complaintId);
+        
+        $formattedHistory = [
+            'created_at' => date('d F Y H:i', strtotime($complaint->created_at)),
+            'approved_at' => $complaint->approved_at ? date('d F Y H:i', strtotime($complaint->approved_at)) : null,
+            'resolved_at' => $complaint->resolved_at ? date('d F Y H:i', strtotime($complaint->resolved_at)) : null,
+        ];
+
+        return response()->json($formattedHistory);
     }
 }

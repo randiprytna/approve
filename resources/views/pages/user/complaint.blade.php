@@ -4,6 +4,14 @@
 
 @section('before-head-end')
     <link href="{{ asset('assets/plugins/custom/datatables/datatables.bundle.css') }}" rel="stylesheet" type="text/css"/>
+    <style>
+        .timeline-label .timeline-label{
+            width:185px!important;
+        }
+        .timeline-label:before{
+            left:186px!important;
+        }
+    </style>
 @endsection
 
 @section('content')
@@ -38,6 +46,7 @@
                                         <th>Complaint</th>
                                         <th>Image</th>
                                         <th>Status</th>
+                                        <th>History</th>
                                     </tr>
                                 </thead>
                                 <tbody></tbody>
@@ -56,7 +65,20 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <div class="row" id="imageCarouselInner"></div>
+                    <div class="row" id="contentImages"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="historyModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-md">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Complaint Images</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row" id="contentHistory"></div>
                 </div>
             </div>
         </div>
@@ -106,6 +128,14 @@
                         return status
                     },
                 },
+                {
+                    "targets": 4,
+                    "render": function(data, type, row, meta){
+                        return `
+                            <button class="btn btn-dark" onclick="showHistoryModal(${row.id})">Click to see History</button>
+                        `;
+                    }
+                },
             ]
         });
 
@@ -114,7 +144,7 @@
                 url: "{{ route('user.complaint.get-images', ':id') }}".replace(':id', complaintId),
                 type: "GET",
                 success: function(response) {
-                    populateImageCarousel(response);
+                    populateImage(response);
                     $('#imageModal').modal('show');
                 },
                 error: function(error) {
@@ -123,8 +153,8 @@
             });
         }
 
-        function populateImageCarousel(images) {
-            const carouselInner = $('#imageCarouselInner');
+        function populateImage(images) {
+            const carouselInner = $('#contentImages');
             carouselInner.empty();
             images.forEach((image, index) => {
                 carouselInner.append(`
@@ -133,6 +163,62 @@
                     </div>
                 `);
             });
+        }
+
+        function showHistoryModal(complaintId) {
+            $.ajax({
+                url: "{{ route('user.complaint.get-history', ':id') }}".replace(':id', complaintId),
+                type: "GET",
+                success: function(response) {
+                    populateHistory(response);
+                    $('#historyModal').modal('show');
+                },
+                error: function(error) {
+                    console.error("Error fetching history", error);
+                }
+            });
+        }
+
+        function populateHistory(history) {
+            const historyInner = $('#contentHistory');
+            historyInner.empty();
+            historyInner.append(`
+                <div class="card-body pt-5 d-flex justify-content-center">
+                    <div class="timeline-label">
+                        <div class="timeline-item">
+                            <div class="timeline-label fw-bold text-gray-800 fs-6">${history.created_at}</div>
+                            <div class="timeline-badge">
+                                <i class="fa fa-genderless text-dark fs-1"></i>
+                            </div>
+                            <div class="timeline-content d-flex">
+                                <span class="fw-bold text-gray-800 ps-3">Complaint Created</span>
+                            </div>
+                        </div>
+                        ${history.approved_at ? `
+                            <div class="timeline-item">
+                                <div class="timeline-label fw-bold text-gray-800 fs-6">${history.approved_at}</div>
+                                <div class="timeline-badge">
+                                    <i class="fa fa-genderless text-success fs-1"></i>
+                                </div>
+                                <div class="timeline-content d-flex">
+                                    <span class="fw-bold text-gray-800 ps-3">Complaint Approved</span>
+                                </div>
+                            </div>
+                        ` : ''}
+                        ${history.resolved_at ? `
+                            <div class="timeline-item">
+                                <div class="timeline-label fw-bold text-gray-800 fs-6">${history.resolved_at}</div>
+                                <div class="timeline-badge">
+                                    <i class="fa fa-genderless text-primary fs-1"></i>
+                                </div>
+                                <div class="timeline-content d-flex">
+                                    <span class="fw-bold text-gray-800 ps-3">Complaint Resolved</span>
+                                </div>
+                            </div>
+                        ` : ''}
+                    </div>
+                </div>
+            `);
         }
     </script>
 @endsection

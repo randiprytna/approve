@@ -16,6 +16,8 @@ return new class extends Migration
             $table->unsignedBigInteger('user_id');
             $table->text('complaint');
             $table->enum('status', ['waiting_for_approval', 'approved', 'complaint_resolved']);
+            $table->dateTime('approved_at')->nullable();
+            $table->dateTime('resolved_at')->nullable();
             $table->timestamps();
         });
     }

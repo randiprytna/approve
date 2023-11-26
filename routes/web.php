@@ -39,11 +39,16 @@ Route::middleware('auth')->group(function ()
         }
     });
     Route::get('sign-out', [AuthController::class, 'signout'])->name('signout');
-    Route::group(['middleware' => 'checkRole:1'], function () {
-        Route::get('admin/complaint', [HandleComplaintController::class, 'index'])->name('admin.complaint');
+    Route::group(['middleware' => 'checkRole:1', 'prefix' => 'admin', 'as' => 'admin.'], function () {
+        Route::get('complaint', [HandleComplaintController::class, 'index'])->name('complaint');
     });
     
-    Route::group(['middleware' => 'checkRole:2'], function () {
-        Route::get('user/complaint', [ComplaintController::class, 'index'])->name('user.complaint');
-    });
+    Route::group(['middleware' => 'checkRole:2', 'prefix' => 'user', 'as' => 'user.'], function () {
+        Route::get('complaint', [ComplaintController::class, 'index'])->name('complaint');
+        Route::get('complaint/data', [ComplaintController::class, 'data'])->name('complaint.data');
+        Route::get('complaint/add', [ComplaintController::class, 'add'])->name('complaint.add');
+        Route::post('complaint/add', [ComplaintController::class, 'addAction']);
+        Route::post('complaint/upload-images', [ComplaintController::class, 'uploadImages'])->name('complaint.upload-images');
+        Route::get('complaint/get-images/{complaintId}', [ComplaintController::class, 'getImages'])->name('complaint.get-images');
+    });    
 });
